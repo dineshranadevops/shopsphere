@@ -12,20 +12,20 @@ NC='\033[0m' # No Color
 # Configuration
 REGISTRY="shopsphere"
 IMAGE_TAG="v1"
-BASE_DIR="/home/ubuntu/shopsphere-platform/application"
+BASE_DIR="/root/shopsphere/application"
 
 # Services and their build contexts
 declare -A SERVICES
 SERVICES=(
-    ["adservice"]="adservice"
+   # ["adservice"]="adservice"
     ["cartservice"]="cartservice/src"
-    ["checkoutservice"]="checkoutservice"
+   # ["checkoutservice"]="checkoutservice"
     ["currencyservice"]="currencyservice"
-    ["emailservice"]="emailservice"
+   # ["emailservice"]="emailservice"
     ["frontend"]="frontend"
-    ["loadgenerator"]="loadgenerator"
-    ["paymentservice"]="paymentservice"
-    ["productcatalogservice"]="productcatalogservice"
+   # ["loadgenerator"]="loadgenerator"
+   # ["paymentservice"]="paymentservice"
+   # ["productcatalogservice"]="productcatalogservice"
     ["recommendationservice"]="recommendationservice"
     ["shippingservice"]="shippingservice"
 )

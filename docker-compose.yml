@@ -1,0 +1,196 @@
+
+services:
+
+  # =========================
+  # REDIS
+  # =========================
+  redis:
+    image: redis:7-alpine
+    container_name: shopsphere-redis
+    restart: unless-stopped
+    networks:
+      - shopsphere
+
+  # =========================
+  # AD SERVICE
+  # =========================
+  adservice:
+    image: dineshccs/shopsphere:adservice-test
+    container_name: shopsphere-adservice
+    restart: unless-stopped
+    environment:
+      PORT: "9555"
+    networks:
+      - shopsphere
+
+  # =========================
+  # CART SERVICE
+  # =========================
+  cartservice:
+    image: dineshccs/shopsphere:cartservice-test
+    container_name: shopsphere-cartservice
+    restart: unless-stopped
+    environment:
+      PORT: "7070"
+      REDIS_ADDR: "redis:6379"
+    depends_on:
+      - redis
+    networks:
+      - shopsphere
+
+  # =========================
+  # CURRENCY SERVICE
+  # =========================
+  currencyservice:
+    image: dineshccs/shopsphere:currencyservice-test
+    container_name: shopsphere-currencyservice
+    restart: unless-stopped
+    environment:
+      PORT: "7000"
+      DISABLE_PROFILER: "1"
+    networks:
+      - shopsphere
+
+  # =========================
+  # EMAIL SERVICE
+  # =========================
+  emailservice:
+    image: dineshccs/shopsphere:emailservice-test
+    container_name: shopsphere-emailservice
+    restart: unless-stopped
+    environment:
+      PORT: "8080"
+    networks:
+      - shopsphere
+
+  # =========================
+  # PAYMENT SERVICE
+  # =========================
+  paymentservice:
+    image: dineshccs/shopsphere:paymentservice-test
+    container_name: shopsphere-paymentservice
+    restart: unless-stopped
+    environment:
+      PORT: "50051"
+      DISABLE_PROFILER: "1"
+    networks:
+      - shopsphere
+
+  # =========================
+  # PRODUCT CATALOG SERVICE
+  # =========================
+  productcatalogservice:
+    image: dineshccs/shopsphere:productcatalogservice-test
+    container_name: shopsphere-productcatalogservice
+    restart: unless-stopped
+    environment:
+      PORT: "3550"
+    networks:
+      - shopsphere
+
+  # =========================
+  # SHIPPING SERVICE
+  # =========================
+  shippingservice:
+    image: dineshccs/shopsphere:shippingservice-v1
+    container_name: shopsphere-shippingservice
+    restart: unless-stopped
+    environment:
+      PORT: "50051"
+    networks:
+      - shopsphere
+
+  # =========================
+  # RECOMMENDATION SERVICE
+  # =========================
+  recommendationservice:
+    image: dineshccs/shopsphere:recommendationservice-v1
+    container_name: shopsphere-recommendationservice
+    restart: unless-stopped
+    environment:
+      PORT: "8080"
+      PRODUCT_CATALOG_SERVICE_ADDR: "productcatalogservice:3550"
+    depends_on:
+      - productcatalogservice
+    networks:
+      - shopsphere
+
+  # =========================
+  # CHECKOUT SERVICE
+  # =========================
+  checkoutservice:
+    image: dineshccs/shopsphere:checkoutservice-test
+    container_name: shopsphere-checkoutservice
+    restart: unless-stopped
+    environment:
+      PORT: "5050"
+      PRODUCT_CATALOG_SERVICE_ADDR: "productcatalogservice:3550"
+      SHIPPING_SERVICE_ADDR: "shippingservice:50051"
+      PAYMENT_SERVICE_ADDR: "paymentservice:50051"
+      EMAIL_SERVICE_ADDR: "emailservice:8080"
+      CURRENCY_SERVICE_ADDR: "currencyservice:7000"
+      CART_SERVICE_ADDR: "cartservice:7070"
+    depends_on:
+      - productcatalogservice
+      - shippingservice
+      - paymentservice
+      - emailservice
+      - currencyservice
+    networks:
+      - shopsphere
+
+  # =========================
+  # FRONTEND
+  # =========================
+  frontend:
+    image: dineshccs/shopsphere:frontend-v1
+    container_name: shopsphere-frontend
+    restart: unless-stopped
+    environment:
+      PORT: "8080"
+
+      AD_SERVICE_ADDR: "adservice:9555"
+      CART_SERVICE_ADDR: "cartservice:7070"
+      CHECKOUT_SERVICE_ADDR: "checkoutservice:5050"
+      CURRENCY_SERVICE_ADDR: "currencyservice:7000"
+      PRODUCT_CATALOG_SERVICE_ADDR: "productcatalogservice:3550"
+      RECOMMENDATION_SERVICE_ADDR: "recommendationservice:8080"
+      SHIPPING_SERVICE_ADDR: "shippingservice:50051"
+
+    depends_on:
+      - adservice
+      - cartservice
+      - checkoutservice
+      - currencyservice
+      - productcatalogservice
+      - recommendationservice
+      - shippingservice
+
+    ports:
+      - "8080:8080"
+
+    networks:
+      - shopsphere
+
+  # =========================
+  # LOAD GENERATOR
+  # =========================
+  loadgenerator:
+    image: dineshccs/shopsphere:loadgenerator-test
+    container_name: shopsphere-loadgenerator
+    restart: unless-stopped
+    environment:
+      FRONTEND_ADDR: "frontend:8080"
+    depends_on:
+      - frontend
+    networks:
+      - shopsphere
+
+
+# =========================
+# NETWORK
+# =========================
+networks:
+  shopsphere:
+    name: shopsphere-network
+    driver: bridge
