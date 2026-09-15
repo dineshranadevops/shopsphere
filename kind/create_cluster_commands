@@ -1,0 +1,29 @@
+
+curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.30.0/kind-linux-amd64
+
+chmod +x ./kind
+
+mv ./kind /usr/local/bin/kind
+
+kind version
+
+kubectl version --client
+
+docker info
+
+kind create cluster   --config kind/kind-config.yaml
+#or
+
+#kind create cluster --name shopsphere
+
+kind get clusters
+
+kubectl get nodes
+
+kubectl cluster-info
+
+kubectl config get-contexts
+
+kubectl config use-context kind-shopsphere
+
+
