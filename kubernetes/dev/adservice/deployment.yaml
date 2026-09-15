@@ -14,7 +14,7 @@ metadata:
 
 spec:
 
-  replicas: 2
+  replicas: 1
 
   revisionHistoryLimit: 5
 
@@ -47,7 +47,7 @@ spec:
 
       - name: adservice
 
-        image: 157263244729.dkr.ecr.us-east-2.amazonaws.com/shopsphere:adservice-v1
+        image: dineshccs/shopsphere:adservice-0967dc5
 
         imagePullPolicy: Always
 
