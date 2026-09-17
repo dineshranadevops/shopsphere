@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: frontend
+  namespace: shopsphere
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - shopsphere-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: frontend.shopsphere.svc.cluster.local
+        port:
+          number: 80
